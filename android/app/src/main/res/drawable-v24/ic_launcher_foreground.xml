@@ -1,0 +1,83 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportHeight="108"
+    android:viewportWidth="108">
+
+    <!-- Grid lines (vertical) -->
+    <path
+        android:pathData="M45,28L45,80"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M63,28L63,80"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"/>
+
+    <!-- Grid lines (horizontal) -->
+    <path
+        android:pathData="M28,45L80,45"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M28,63L80,63"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineCap="round"/>
+
+    <!-- X in top-left cell (center ~36.5, 36.5) -->
+    <path
+        android:pathData="M31,31L42,42"
+        android:strokeColor="#FFD54F"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M42,31L31,42"
+        android:strokeColor="#FFD54F"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"/>
+
+    <!-- O in center cell (center 54, 54) -->
+    <path
+        android:pathData="M54,49A5,5 0 1,1 53.99,49"
+        android:strokeColor="#80DEEA"
+        android:strokeWidth="3.5"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round"/>
+
+    <!-- X in bottom-right cell (center ~71.5, 71.5) -->
+    <path
+        android:pathData="M67,67L78,78"
+        android:strokeColor="#FFD54F"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M78,67L67,78"
+        android:strokeColor="#FFD54F"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"/>
+
+    <!-- O in top-right cell (center ~71.5, 36.5) -->
+    <path
+        android:pathData="M71.5,31.5A5,5 0 1,1 71.49,31.5"
+        android:strokeColor="#80DEEA"
+        android:strokeWidth="3.5"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round"/>
+
+    <!-- X in bottom-left cell (center ~36.5, 71.5) -->
+    <path
+        android:pathData="M31,67L42,78"
+        android:strokeColor="#FFD54F"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"/>
+    <path
+        android:pathData="M42,67L31,78"
+        android:strokeColor="#FFD54F"
+        android:strokeWidth="3.5"
+        android:strokeLineCap="round"/>
+
+</vector>

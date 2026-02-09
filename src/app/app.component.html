@@ -1,0 +1,38 @@
+<div class="game-container">
+  <h1 class="title">{{ title }}</h1>
+
+  <div class="status" [class.winner]="winner" [class.error]="errorMessage">
+    <p *ngIf="!errorMessage">{{ getStatusMessage() }}</p>
+    <p *ngIf="errorMessage" class="error-text">{{ errorMessage }}</p>
+  </div>
+
+  <div class="board">
+    <div *ngFor="let row of board; let r = index" class="board-row">
+      <button
+        *ngFor="let cell of row; let c = index"
+        class="cell"
+        [class]="getCellClass(r, c)"
+        [disabled]="isGameOver || loading || cell !== ''"
+        (click)="onCellClick(r, c)">
+        {{ cell }}
+      </button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button class="btn btn-new" (click)="startNewGame()" [disabled]="loading">
+      New Game
+    </button>
+    <button class="btn btn-reset" (click)="resetGame()" [disabled]="loading">
+      Reset
+    </button>
+  </div>
+
+<div class="info-ticker">
+    <span class="ticker-text">⚡ Each player keeps only their last 3 moves on the board! The oldest move disappears when you place a new one. ⚡</span>
+</div>
+
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+</div>

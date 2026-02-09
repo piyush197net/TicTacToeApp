@@ -1,0 +1,36 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# IDE
+.idea/
+*.swp
+*.swo
+.vscode/
+
+# Angular cache
+.angular/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files
+src/environments/environment.ts
+src/environments/environment.prod.ts
+
+# Keystore (NEVER commit these)
+android/keystore.jks
+android/keystore.properties
+
+# Android build artifacts
+android/app/build/
+android/build/
+android/capacitor-cordova-android-plugins/build/
+android/.gradle/
+android/local.properties
+*.aab
+*.apk
+node_modules
