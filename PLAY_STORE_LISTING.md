@@ -54,5 +54,4 @@ Everyone (ESRB) / PEGI 3
 piyush.net@gmail.com
 
 ## Privacy Policy URL
-[Replace with your GitHub Pages URL after hosting]
-https://[your-github-username].github.io/tictactoe-privacy-policy/
+https://piyush197net.github.io/TicTacToeApp/privacy-policy.html
