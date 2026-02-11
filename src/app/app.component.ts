@@ -7,8 +7,6 @@ import { GameService, GameResponse } from './services/game.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  title = 'Tic Tac Toe - Last 3 Moves Only';
-
   gameId: string = '';
   board: string[][] = [['', '', ''], ['', '', ''], ['', '', '']];
   currentPlayer: string = 'X';
@@ -16,12 +14,14 @@ export class AppComponent implements OnInit {
   isGameOver: boolean = false;
   loading: boolean = false;
   errorMessage: string = '';
-  isSinglePlayer: boolean = true;
   isComputerThinking: boolean = false;
+  showResult: boolean = false;
 
   player1Moves: number[] = [];
   player2Moves: number[] = [];
   winningLine: number[] = [];
+
+  scores = { X: 0, O: 0, draws: 0 };
 
   constructor(private gameService: GameService) { }
 
@@ -51,7 +51,7 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    if (this.isSinglePlayer && this.currentPlayer !== 'X') {
+    if (this.currentPlayer !== 'X') {
       return;
     }
 
@@ -63,7 +63,7 @@ export class AppComponent implements OnInit {
         this.updateGameState(response);
         this.loading = false;
 
-        if (this.isSinglePlayer && !this.isGameOver && this.currentPlayer === 'O') {
+        if (!this.isGameOver && this.currentPlayer === 'O') {
           this.makeComputerMove();
         }
       },
@@ -92,30 +92,9 @@ export class AppComponent implements OnInit {
     }, 500);
   }
 
-  toggleGameMode(): void {
-    this.isSinglePlayer = !this.isSinglePlayer;
+  restartGame(): void {
+    this.showResult = false;
     this.startNewGame();
-  }
-
-  resetGame(): void {
-    if (!this.gameId) {
-      this.startNewGame();
-      return;
-    }
-
-    this.loading = true;
-    this.errorMessage = '';
-
-    this.gameService.resetGame(this.gameId).subscribe({
-      next: (response: GameResponse) => {
-        this.updateGameState(response);
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Error resetting game:', error);
-        this.startNewGame();
-      }
-    });
   }
 
   private updateGameState(response: GameResponse): void {
@@ -127,47 +106,94 @@ export class AppComponent implements OnInit {
     this.player1Moves = response.player1Moves || [];
     this.player2Moves = response.player2Moves || [];
     this.winningLine = response.winningLine || [];
-}
-getCellClass(row: number, col: number): string {
-    const value = this.board[row][col];
-    const position = row * 3 + col;
-    let classes = '';
 
-    if (value === 'X') {
-      classes = 'cell-x';
-      if (!this.winner && this.player1Moves.length === 3 && this.player1Moves[0] === position) {
-        classes += ' blink-warning';
-      }
-    } else if (value === 'O') {
-      classes = 'cell-o';
-    }
-
-    if (this.winner && this.winningLine.includes(position)) {
-      classes += ' cell-winner';
-    }
-
-    return classes;
-}
-
-  getStatusMessage(): string {
-    if (this.winner) {
-      if (this.isSinglePlayer) {
-        return this.winner === 'X' ? '🎉 You Win!' : '🤖 Computer Wins!';
-      }
-      return `Player ${this.winner} wins!`;
-    } else if (this.isGameOver) {
-      return 'Game Over';
-    } else if (this.isComputerThinking) {
-      return '🤖 Computer is thinking...';
-    } else {
-      if (this.isSinglePlayer) {
-        return this.currentPlayer === 'X' ? '👤 Your Turn (X)' : '🤖 Computer\'s Turn (O)';
-      }
-      return `Player ${this.currentPlayer}'s Turn`;
+    if (this.isGameOver && this.winner) {
+      this.scores[this.winner as 'X' | 'O']++;
+      setTimeout(() => { this.showResult = true; }, 400);
     }
   }
 
-  getGameModeText(): string {
-    return this.isSinglePlayer ? '👤 vs 🤖 Computer' : '👤 vs 👤 Two Players';
+  // ── Template helpers ──
+
+  getTurnLabel(): string {
+    if (this.isGameOver) return 'GAME OVER';
+    if (this.isComputerThinking) return 'AI THINKING...';
+    return this.currentPlayer === 'X' ? 'YOUR TURN' : 'AI TURN';
+  }
+
+  isWinCell(row: number, col: number): boolean {
+    return this.winningLine.includes(row * 3 + col);
+  }
+
+  getPieceClasses(row: number, col: number): { [key: string]: boolean } {
+    const value = this.board[row][col];
+    const position = row * 3 + col;
+    const isX = value === 'X';
+    const moves = isX ? this.player1Moves : this.player2Moves;
+    const posInQueue = moves.indexOf(position);
+    const age = posInQueue >= 0 ? moves.length - 1 - posInQueue : 0;
+
+    return {
+      'x-piece': isX,
+      'o-piece': !isX,
+      'age-0': age === 0,
+      'age-1': age === 1,
+      'age-2': age === 2,
+    };
+  }
+
+  getMoveBadge(row: number, col: number): string {
+    const value = this.board[row][col];
+    const position = row * 3 + col;
+    const moves = value === 'X' ? this.player1Moves : this.player2Moves;
+    const posInQueue = moves.indexOf(position);
+    const age = posInQueue >= 0 ? moves.length - 1 - posInQueue : 0;
+    return age === 0 ? 'new' : age === 1 ? '2nd' : 'old';
+  }
+
+  getWinnerColor(): string {
+    if (!this.winner) return 'var(--muted)';
+    return this.winner === 'X' ? 'var(--x-color)' : 'var(--o-color)';
+  }
+
+  getResultTitle(): string {
+    if (!this.winner) return 'DRAW';
+    return this.winner === 'X' ? 'YOU WIN!' : 'AI WINS!';
+  }
+
+  getResultLabel(): string {
+    if (!this.winner) return 'No one wins this round';
+    return this.winner === 'X' ? 'Great job! You beat the AI' : 'The AI takes this round';
+  }
+
+  getWinLineStyle(): { [key: string]: string } {
+    if (this.winningLine.length !== 3) return {};
+
+    const sorted = [...this.winningLine].sort((a, b) => a - b);
+    const [a, , c] = sorted;
+
+    // Convert cell index to grid center coordinates (percentages)
+    const cx = (pos: number) => ((pos % 3) * 33.33 + 16.67) + '%';
+    const cy = (pos: number) => (Math.floor(pos / 3) * 33.33 + 16.67) + '%';
+
+    const x1 = (sorted[0] % 3) * 33.33 + 16.67;
+    const y1 = Math.floor(sorted[0] / 3) * 33.33 + 16.67;
+    const x2 = (sorted[2] % 3) * 33.33 + 16.67;
+    const y2 = Math.floor(sorted[2] / 3) * 33.33 + 16.67;
+
+    const dx = x2 - x1;
+    const dy = y2 - y1;
+    const length = Math.sqrt(dx * dx + dy * dy);
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+
+    const color = this.winner === 'X' ? '#ff4d6d' : '#4dffb8';
+
+    return {
+      'left': x1 + '%',
+      'top': y1 + '%',
+      'width': length + '%',
+      'transform': `rotate(${angle}deg)`,
+      'background': `linear-gradient(90deg, transparent, ${color}, transparent)`,
+    };
   }
 }

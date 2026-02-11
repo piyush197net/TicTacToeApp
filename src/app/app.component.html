@@ -1,38 +1,96 @@
-<div class="game-container">
-  <h1 class="title">{{ title }}</h1>
-
-  <div class="status" [class.winner]="winner" [class.error]="errorMessage">
-    <p *ngIf="!errorMessage">{{ getStatusMessage() }}</p>
-    <p *ngIf="errorMessage" class="error-text">{{ errorMessage }}</p>
+<div class="wrapper">
+  <div>
+    <div class="title">
+      <span>X</span><span class="slash">/</span><span>O</span>
+      &nbsp;LAST THREE
+    </div>
+    <div class="subtitle">Only your last 3 moves stay on the board</div>
   </div>
 
-  <div class="board">
-    <div *ngFor="let row of board; let r = index" class="board-row">
-      <button
-        *ngFor="let cell of row; let c = index"
-        class="cell"
-        [class]="getCellClass(r, c)"
-        [disabled]="isGameOver || loading || cell !== ''"
-        (click)="onCellClick(r, c)">
-        {{ cell }}
-      </button>
+  <div class="status-bar">
+    <div class="player-indicator x-ind" [class.active]="currentPlayer === 'X' && !isGameOver">
+      <div>
+        <div class="symbol">X</div>
+        <div class="move-dots">
+          <div *ngFor="let i of [0,1,2]"
+               class="move-dot"
+               [class.filled]="i < player1Moves.length"
+               [class.danger]="player1Moves.length === 3 && i === 0">
+          </div>
+        </div>
+      </div>
+      <span>YOU</span>
+    </div>
+    <div class="divider">&middot;</div>
+    <div style="text-align:center;">
+      <div class="turn-label">{{ getTurnLabel() }}</div>
+    </div>
+    <div class="divider">&middot;</div>
+    <div class="player-indicator o-ind" [class.active]="currentPlayer === 'O' && !isGameOver">
+      <span>AI</span>
+      <div>
+        <div class="symbol">O</div>
+        <div class="move-dots">
+          <div *ngFor="let i of [0,1,2]"
+               class="move-dot"
+               [class.filled]="i < player2Moves.length"
+               [class.danger]="player2Moves.length === 3 && i === 0">
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="controls">
-    <button class="btn btn-new" (click)="startNewGame()" [disabled]="loading">
-      New Game
-    </button>
-    <button class="btn btn-reset" (click)="resetGame()" [disabled]="loading">
-      Reset
-    </button>
+  <div class="board">
+    <!-- Win strike line -->
+    <div class="win-line-overlay" *ngIf="winningLine.length > 0">
+      <div class="win-line" [ngStyle]="getWinLineStyle()"></div>
+    </div>
+    <div *ngFor="let row of [0,1,2]; let r = index" class="board-row">
+      <div *ngFor="let col of [0,1,2]; let c = index"
+           class="cell"
+           [class.taken]="board[r][c] !== ''"
+           [class.win-cell]="isWinCell(r, c)"
+           [attr.data-preview]="currentPlayer"
+           (click)="onCellClick(r, c)">
+        <div *ngIf="board[r][c] !== ''"
+             class="piece"
+             [ngClass]="getPieceClasses(r, c)">
+          {{ board[r][c] }}
+          <div class="move-badge">{{ getMoveBadge(r, c) }}</div>
+        </div>
+      </div>
+    </div>
   </div>
 
-<div class="info-ticker">
-    <span class="ticker-text">⚡ Each player keeps only their last 3 moves on the board! The oldest move disappears when you place a new one. ⚡</span>
+  <div class="scores">
+    <div class="score-item x-score">
+      <span class="score-num">{{ scores.X }}</span>
+      <span>YOU</span>
+    </div>
+    <div class="score-sep">|</div>
+    <div class="score-item tie-score">
+      <span class="score-num">{{ scores.draws }}</span>
+      <span>DRAWS</span>
+    </div>
+    <div class="score-sep">|</div>
+    <div class="score-item o-score">
+      <span class="score-num">{{ scores.O }}</span>
+      <span>AI</span>
+    </div>
+  </div>
+
+  <div class="rules">
+    Each player holds max <strong>3 pieces</strong> — placing a 4th<br>
+    removes their oldest move. <strong>Vanishing acts win games.</strong>
+  </div>
 </div>
 
-  <div *ngIf="loading" class="loading-overlay">
-    <div class="spinner"></div>
+<!-- Result overlay -->
+<div class="result-overlay" [class.show]="showResult" (click)="restartGame()">
+  <div class="result-card" (click)="$event.stopPropagation()">
+    <div class="result-winner" [ngStyle]="{'color': getWinnerColor()}">{{ getResultTitle() }}</div>
+    <div class="result-label">{{ getResultLabel() }}</div>
+    <button class="restart-btn" (click)="restartGame()">PLAY AGAIN →</button>
   </div>
 </div>

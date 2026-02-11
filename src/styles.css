@@ -5,11 +5,38 @@
 }
 
 body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  font-family: 'DM Mono', monospace;
+  background: #0a0a0f;
   min-height: 100vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  color: #fff;
+  justify-content: center;
+  color: #e8e8f0;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Background grid texture */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(#2a2a3a 1px, transparent 1px),
+    linear-gradient(90deg, #2a2a3a 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+/* Ambient glows */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 60% at 20% 20%, rgba(255,77,109,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 60% at 80% 80%, rgba(77,255,184,0.08) 0%, transparent 70%);
+  pointer-events: none;
 }
